@@ -772,6 +772,36 @@ function bindEvents() {
       closeThemePicker();
     }
   });
+  
+  // TOC 滚动监听
+  const contentArea = document.getElementById('content-area');
+  let tocScrollTimer;
+  contentArea.addEventListener('scroll', () => {
+    clearTimeout(tocScrollTimer);
+    tocScrollTimer = setTimeout(updateTocActive, 150);
+  });
+}
+
+// ========== TOC 滚动高亮 ==========
+function updateTocActive() {
+  const tocItems = document.querySelectorAll('.toc-item a');
+  if (!tocItems.length) return;
+  
+  const contentArea = document.getElementById('content-area');
+  const scrollTop = contentArea.scrollTop;
+  const offset = 80; // toolbar height + padding
+  
+  let activeIdx = 0;
+  STATE.tocItems.forEach((item, i) => {
+    const el = document.getElementById(item.id);
+    if (el && el.offsetTop - scrollTop < offset + 100) {
+      activeIdx = i;
+    }
+  });
+  
+  tocItems.forEach((a, i) => {
+    a.parentElement.classList.toggle('toc-active', i === activeIdx);
+  });
 }
 
 // ========== 启动 ==========

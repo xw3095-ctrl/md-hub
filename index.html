@@ -179,7 +179,7 @@ a:hover { text-decoration: underline; }
 .content-area {
   flex: 1;
   overflow-y: auto;
-  padding: 32px 40px;
+  padding: 32px 48px 64px;
   min-width: 0;
   transition: padding var(--transition);
 }
@@ -189,7 +189,7 @@ a:hover { text-decoration: underline; }
 }
 
 .content-area.toc-closed {
-  padding-right: 40px;
+  padding-right: 48px;
 }
 
 /* TOC 面板 */
@@ -223,15 +223,22 @@ a:hover { text-decoration: underline; }
   padding: 8px 0;
 }
 
-.toc-item {
+.toc-item { 
   padding: 4px 16px;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 13px;
-  transition: color var(--transition);
+  transition: all var(--transition);
   position: relative;
+  border-left: 2px solid transparent;
 }
 .toc-item:hover { color: var(--text-primary); }
+.toc-item.toc-active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--bg-hover);
+}
+.toc-item.toc-active a { color: var(--accent); }
 .toc-item a { color: inherit; text-decoration: none; display: block; }
 .toc-h1 { padding-left: 16px; font-weight: 600; }
 .toc-h2 { padding-left: 28px; font-size: 12.5px; }
@@ -320,7 +327,7 @@ a:hover { text-decoration: underline; }
 }
 
 /* ============================================
-   内容渲染
+   内容渲染 — 排版优化
    ============================================ */
 .content-loading {
   display: flex;
@@ -343,133 +350,233 @@ a:hover { text-decoration: underline; }
 .content-render {
   max-width: 880px;
   margin: 0 auto;
+  font-size: 15px;
 }
 
+/* 锚点偏移：避免被工具栏遮挡 */
+.content-render h1, .content-render h2, .content-render h3, 
+.content-render h4, .content-render h5, .content-render h6 {
+  scroll-margin-top: 64px;
+}
+
+/* 内容区平滑滚动 */
+.content-area {
+  scroll-behavior: smooth;
+}
+
+/* ---- Headings ---- */
 .content-render h1 { 
-  font-size: 28px; 
+  font-size: 30px; 
   font-weight: 700; 
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+  margin: 0 0 24px 0;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--accent);
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 .content-render h2 { 
-  font-size: 22px; 
+  font-size: 23px; 
   font-weight: 600; 
-  margin: 28px 0 12px 0;
+  margin: 36px 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 .content-render h3 { 
   font-size: 18px; 
   font-weight: 600; 
-  margin: 22px 0 10px 0;
+  margin: 28px 0 10px 0;
+  padding-left: 0;
   color: var(--text-primary);
 }
 .content-render h4 {
   font-size: 16px;
   font-weight: 600;
-  margin: 18px 0 8px 0;
+  margin: 22px 0 8px 0;
   color: var(--text-secondary);
 }
 
+/* ---- Body text ---- */
 .content-render p {
-  margin: 8px 0;
-  line-height: 1.75;
+  margin: 0 0 12px 0;
+  line-height: 1.8;
+  text-align: justify;
+  font-size: 15px;
 }
 
+.content-render p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- Lists ---- */
 .content-render ul, .content-render ol {
-  margin: 8px 0;
-  padding-left: 24px;
+  margin: 8px 0 16px 0;
+  padding-left: 26px;
 }
 .content-render li {
-  margin: 4px 0;
-  line-height: 1.7;
+  margin: 5px 0;
+  line-height: 1.75;
+}
+.content-render li > ul,
+.content-render li > ol {
+  margin: 4px 0 4px 0;
 }
 
+/* task list */
+.content-render input[type="checkbox"] {
+  margin-right: 6px;
+  accent-color: var(--accent);
+  transform: scale(1.1);
+}
+
+/* ---- Blockquotes ---- */
 .content-render blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 8px 16px;
-  margin: 12px 0;
-  background: var(--bg-tertiary);
+  border-left: 4px solid var(--accent);
+  padding: 14px 20px;
+  margin: 16px 0;
+  background: linear-gradient(to right, var(--bg-tertiary), transparent);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--text-secondary);
+  line-height: 1.7;
+}
+.content-render blockquote p {
+  margin: 4px 0;
+  text-align: left;
+}
+.content-render blockquote strong {
+  color: var(--text-primary);
 }
 
+/* ---- Inline code ---- */
 .content-render code {
   font-family: var(--font-mono);
   font-size: 13px;
   background: var(--code-bg);
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 2px 7px;
+  border-radius: 4px;
   color: var(--text-accent);
+  border: 1px solid var(--border-light);
 }
 
+/* ---- Code blocks ---- */
 .content-render pre {
-  margin: 12px 0;
+  margin: 16px 0;
   border-radius: var(--radius-md);
   overflow-x: auto;
   position: relative;
+  border: 1px solid var(--border-color);
+  background: var(--code-bg) !important;
 }
-
 .content-render pre code {
   background: none;
-  padding: 16px;
+  padding: 18px 20px;
   display: block;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
+  border: none;
+  tab-size: 2;
 }
 
+/* ---- Horizontal rule ---- */
 .content-render hr {
   border: none;
-  border-top: 1px solid var(--border-color);
-  margin: 24px 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-color), transparent);
+  margin: 32px 0;
 }
 
+/* ---- Strong / Em ---- */
 .content-render strong {
   font-weight: 600;
   color: var(--text-primary);
 }
-
 .content-render em {
   font-style: italic;
 }
 
+/* ---- Links ---- */
+.content-render a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+.content-render a:hover {
+  border-bottom-color: var(--link);
+  text-decoration: none;
+}
+
+/* ---- Images ---- */
 .content-render img {
   max-width: 100%;
   border-radius: var(--radius-md);
-  margin: 12px 0;
+  margin: 20px auto;
+  display: block;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1px solid var(--border-light);
 }
 
-/* Markdown 表格 */
+/* ---- Markdown 表格 ---- */
 .md-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 12px 0;
-  font-size: 13px;
+  margin: 16px 0;
+  font-size: 13.5px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.md-table thead {
+  border-bottom: 2px solid var(--accent);
 }
 .md-table th {
   background: var(--bg-tertiary);
-  padding: 8px 12px;
+  padding: 10px 14px;
   text-align: left;
   font-weight: 600;
-  border: 1px solid var(--border-color);
+  border: none;
   color: var(--text-primary);
+  font-size: 13px;
 }
 .md-table td {
-  padding: 8px 12px;
-  border: 1px solid var(--border-color);
+  padding: 9px 14px;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-secondary);
 }
-.md-table tr:nth-child(even) {
+.md-table tr:nth-child(even) td {
   background: var(--bg-secondary);
 }
-.md-table tr:hover {
+.md-table tr:hover td {
   background: var(--bg-hover);
+}
+.md-table tr:last-child td {
+  border-bottom: none;
 }
 
 .table-wrapper {
   overflow-x: auto;
-  margin: 12px 0;
+  margin: 16px 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* ---- KaTeX math ---- */
+.katex { font-size: 1.1em; }
+.katex-display {
+  margin: 16px 0;
+  padding: 8px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---- Error state ---- */
+.content-error {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--error);
+  font-size: 16px;
+  line-height: 2;
 }
 
 .content-error {
