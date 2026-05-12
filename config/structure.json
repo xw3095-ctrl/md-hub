@@ -130,11 +130,6 @@
       },
       {
         "type": "file",
-        "name": "CloudComputing.md",
-        "label": "☁️ 云计算与 AI 基建"
-      },
-      {
-        "type": "file",
         "name": "Cloud_AI_Infrastructure.md",
         "label": "☁️ 云/AI 基础设施"
       },
