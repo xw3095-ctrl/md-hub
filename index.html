@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark-plus">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Hub · 个人知识库</title>
+
+<!-- CDN 库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<!-- 本地样式 -->
+<link rel="stylesheet" href="css/themes.css">
+
+<style>
+/* ============================================
+   CSS Reset & 基础布局
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  transition: background var(--transition), color var(--transition);
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ============================================
+   滚动条
+   ============================================ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+::-webkit-scrollbar-thumb { 
+  background: var(--scrollbar-thumb); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============================================
+   布局容器
+   ============================================ */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* 侧边栏 */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.25s ease, opacity 0.25s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+.sidebar.closed {
+  margin-left: calc(var(--sidebar-width) * -1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-header {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: var(--sidebar-header);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  min-height: 40px;
+}
+
+.sidebar-header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.sidebar-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+/* 工具栏 */
+.toolbar {
+  height: var(--toolbar-height);
+  min-height: var(--toolbar-height);
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 主内容区 */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px;
+  min-width: 0;
+  transition: padding var(--transition);
+}
+
+.content-area.sidebar-closed {
+  padding-left: 56px;
+}
+
+.content-area.toc-closed {
+  padding-right: 40px;
+}
+
+/* TOC 面板 */
+.toc-panel {
+  width: var(--toc-width);
+  min-width: var(--toc-width);
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
+  overflow-y: auto;
+  transition: margin-right 0.25s ease, opacity 0.25s ease;
+}
+.toc-panel.closed {
+  margin-right: calc(var(--toc-width) * -1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toc-header {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.toc-list {
+  list-style: none;
+  padding: 8px 0;
+}
+
+.toc-item {
+  padding: 4px 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: color var(--transition);
+  position: relative;
+}
+.toc-item:hover { color: var(--text-primary); }
+.toc-item a { color: inherit; text-decoration: none; display: block; }
+.toc-h1 { padding-left: 16px; font-weight: 600; }
+.toc-h2 { padding-left: 28px; font-size: 12.5px; }
+.toc-h3 { padding-left: 40px; font-size: 12px; color: var(--text-muted); }
+.toc-h4 { padding-left: 52px; font-size: 11.5px; color: var(--text-muted); }
+
+/* ============================================
+   按钮
+   ============================================ */
+.toolbar-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.toolbar-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.toolbar-btn.active {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+.toolbar-btn.primary {
+  color: var(--accent);
+}
+.toolbar-btn.primary:hover {
+  background: rgba(0, 122, 204, 0.15);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-color);
+  margin: 0 2px;
+}
+
+/* ============================================
+   目录树样式
+   ============================================ */
+.tree-item {
+  padding: 4px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: all var(--transition);
+  user-select: none;
+  white-space: nowrap;
+}
+.tree-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.tree-item.active {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+.tree-icon { flex-shrink: 0; font-size: 14px; }
+.tree-label { overflow: hidden; text-overflow: ellipsis; }
+.tree-arrow { 
+  font-size: 10px; 
+  transition: transform 0.2s ease;
+  width: 14px;
+  flex-shrink: 0;
+}
+.tree-children.hidden { display: none; }
+.tree-group .dir-item.collapsed + .tree-children { display: none; }
+.tree-children .tree-item { padding-left: 32px; }
+.tree-children .tree-children .tree-item { padding-left: 48px; }
+
+.tree-error {
+  padding: 16px;
+  color: var(--error);
+  text-align: center;
+}
+
+/* ============================================
+   内容渲染
+   ============================================ */
+.content-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.content-render {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.content-render h1 { 
+  font-size: 28px; 
+  font-weight: 700; 
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.content-render h2 { 
+  font-size: 22px; 
+  font-weight: 600; 
+  margin: 28px 0 12px 0;
+  color: var(--text-primary);
+}
+.content-render h3 { 
+  font-size: 18px; 
+  font-weight: 600; 
+  margin: 22px 0 10px 0;
+  color: var(--text-primary);
+}
+.content-render h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 18px 0 8px 0;
+  color: var(--text-secondary);
+}
+
+.content-render p {
+  margin: 8px 0;
+  line-height: 1.75;
+}
+
+.content-render ul, .content-render ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+.content-render li {
+  margin: 4px 0;
+  line-height: 1.7;
+}
+
+.content-render blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: var(--bg-tertiary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary);
+}
+
+.content-render code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--text-accent);
+}
+
+.content-render pre {
+  margin: 12px 0;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  position: relative;
+}
+
+.content-render pre code {
+  background: none;
+  padding: 16px;
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.content-render hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 24px 0;
+}
+
+.content-render strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.content-render em {
+  font-style: italic;
+}
+
+.content-render img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: 12px 0;
+}
+
+/* Markdown 表格 */
+.md-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.md-table th {
+  background: var(--bg-tertiary);
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.md-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.md-table tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+.md-table tr:hover {
+  background: var(--bg-hover);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.content-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--error);
+  font-size: 16px;
+}
+
+/* 编辑器 */
+.content-editor {
+  display: none;
+  width: 100%;
+  height: calc(100vh - var(--toolbar-height) - 64px);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 20px;
+  border: none;
+  resize: none;
+  outline: none;
+  background: var(--bg-editor);
+  color: var(--text-primary);
+  tab-size: 2;
+}
+
+/* ============================================
+   主题选择器
+   ============================================ */
+.theme-picker {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  box-shadow: 0 8px 32px var(--shadow);
+  display: none;
+  z-index: 100;
+  max-height: 60vh;
+  overflow-y: auto;
+  min-width: 200px;
+}
+.theme-picker.active { display: block; }
+
+.theme-picker-group {
+  margin-bottom: 8px;
+}
+.theme-picker-group:last-child { margin-bottom: 0; }
+
+.theme-picker-group-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.theme-picker-item {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all var(--transition);
+  color: var(--text-secondary);
+}
+.theme-picker-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.theme-picker-item.active {
+  color: var(--text-primary);
+  background: var(--bg-active);
+}
+
+/* ============================================
+   弹窗 (Modal)
+   ============================================ */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--modal-overlay);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 48px var(--shadow);
+}
+
+.modal-content.wide {
+  max-width: 700px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.modal-body {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.modal-body p {
+  margin: 10px 0;
+}
+
+.modal-body ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.modal-body li {
+  margin: 4px 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.modal-btn:hover {
+  background: var(--bg-hover);
+}
+.modal-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.modal-btn.primary:hover {
+  background: var(--accent-hover);
+}
+.modal-btn.danger {
+  background: var(--error);
+  border-color: var(--error);
+  color: #fff;
+}
+
+.modal-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.modal-input:focus {
+  border-color: var(--accent);
+}
+
+.modal-error {
+  color: var(--error);
+  font-size: 13px;
+  margin-top: 8px;
+  display: none;
+}
+
+/* 风险提示特殊样式 */
+.risk-warning {
+  background: rgba(244, 71, 71, 0.1);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.risk-warning .risk-icon {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   搜索遮罩
+   ============================================ */
+.search-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--modal-overlay);
+  z-index: 999;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+.search-overlay.active { display: flex; }
+
+.search-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 70vh;
+  overflow: hidden;
+  box-shadow: 0 16px 48px var(--shadow);
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+}
+
+.search-input-wrap .search-icon {
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-results {
+  overflow-y: auto;
+  max-height: 50vh;
+  padding: 8px 0;
+}
+
+.search-status {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.search-result-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.search-result-item:hover {
+  background: var(--bg-hover);
+}
+
+.search-result-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.search-result-path {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 2px 0;
+  font-family: var(--font-mono);
+}
+
+.search-result-snippet {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-snippet mark {
+  background: rgba(255, 200, 0, 0.3);
+  color: var(--text-primary);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.search-line {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.search-result-more {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ============================================
+   Toast 通知
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  font-size: 14px;
+  color: var(--text-primary);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 2000;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
+   目录配置
+   ============================================ */
+.toc-config-list {
+  margin: 12px 0;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+.config-row:hover {
+  background: var(--bg-hover);
+}
+
+.config-icon { flex-shrink: 0; }
+.config-label { flex: 1; font-size: 13px; color: var(--text-primary); }
+.config-type { 
+  font-size: 11px; 
+  color: var(--text-muted);
+  padding: 2px 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+.config-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 12px;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+.config-btn:hover { opacity: 1; }
+.config-btn-sm { opacity: 0.4; }
+
+/* ============================================
+   响应式
+   ============================================ */
+@media (max-width: 1024px) {
+  .toc-panel { display: none; }
+  .content-area { padding: 24px 28px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--toolbar-height);
+    height: calc(100vh - var(--toolbar-height));
+    z-index: 50;
+    box-shadow: 4px 0 16px var(--shadow);
+  }
+  .sidebar.closed {
+    margin-left: calc(var(--sidebar-width) * -1);
+  }
+  .content-area { padding: 20px; }
+  .content-render h1 { font-size: 24px; }
+  .content-render h2 { font-size: 19px; }
+  .toolbar-btn span { display: none; }
+  .modal-content { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== Toast ==================== -->
+<div id="toast" class="toast"></div>
+
+<!-- ==================== 风险提示弹窗 ==================== -->
+<div id="risk-modal" class="modal">
+  <div class="modal-content">
+    <div class="risk-warning">
+      <div class="risk-icon">⚠️</div>
+      <h2 style="text-align:center;margin-bottom:12px;font-size:20px;">风险提示与免责声明</h2>
+      <p style="text-align:center;font-size:13px;color:var(--text-muted);">Risk Warning & Disclaimer</p>
+    </div>
+    <div class="modal-body">
+      <p>🤖 <strong>AI 生成内容警告</strong>：本站内容<strong>主要由大语言模型（LLM）自动生成</strong>。尽管已采用多轮审计、交叉验证等手段尽力减少 AI 幻觉（Hallucination），但<strong>仍无法 100% 杜绝</strong>事实性错误、数据偏差或逻辑瑕疵。请务必自行核实关键数据与结论。</p>
+      <p><strong>关于本站</strong>：本站为<strong>非营利性质</strong>的个人项目，仅供本人及少数朋友<strong>小范围学习交流</strong>使用。本站不从事任何商业活动、不收取任何费用。</p>
+      <ul>
+        <li>所有内容均为个人收录知识库与 AI 模型生成，<strong>不构成</strong>任何形式的投资建议、推荐或承诺。</li>
+        <li>文中涉及的财务数据、估值模型、行业判断等均<strong>可能存在误差</strong>，不保证准确性、完整性和时效性。</li>
+        <li>文中提及的股票、基金等标的仅为研究讨论之用，<strong>不作为买卖依据</strong>。</li>
+        <li>市场有风险，投资需谨慎。对因参考本站内容而产生的任何投资损失，本站<strong>不承担</strong>任何责任。</li>
+      </ul>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="acceptRisk()">我已阅读并理解上述风险，继续访问</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 移动端提示弹窗 ==================== -->
+<div id="mobile-modal" class="modal">
+  <div class="modal-content" style="max-width:400px;">
+    <div class="modal-title">🖥️ 建议使用电脑访问</div>
+    <div class="modal-body">
+      <p>当前系统未针对移动设备优化，部分功能在手机上可能显示异常。推荐使用 PC / Mac 获得最佳体验。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="dismissMobile()">知道了，继续浏览</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 搜索遮罩 ==================== -->
+<div id="search-overlay" class="search-overlay">
+  <div class="search-panel">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search-input" class="search-input" type="text" placeholder="搜索内容... (按 Enter 搜索)" spellcheck="false" autocomplete="off">
+      <span style="color:var(--text-muted);font-size:12px;font-family:var(--font-mono);">Esc</span>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-status">输入关键词开始搜索</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 管理员登录弹窗 ==================== -->
+<div id="login-modal" class="modal">
+  <div class="modal-content" style="max-width:400px;">
+    <div class="modal-title">🔐 管理员登录</div>
+    <div class="modal-body">
+      <label class="modal-label">密码</label>
+      <input id="login-password" class="modal-input" type="password" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')doLogin()">
+      <div id="login-error" class="modal-error">❌ 密码错误</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeLogin()">取消</button>
+      <button class="modal-btn primary" onclick="doLogin()">登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 目录配置弹窗 ==================== -->
+<div id="toc-config-modal" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-title">⚙️ 目录配置</div>
+    <div class="modal-body">
+      <div id="toc-config-list" class="toc-config-list"></div>
+      <button class="modal-btn" onclick="addDirectory()" style="margin-top:8px;">+ 添加目录</button>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeTocConfig()">取消</button>
+      <button class="modal-btn primary" onclick="saveTocConfig()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 主布局 ==================== -->
+<div class="app-layout">
+
+  <!-- 侧边栏 -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <span>📁 MD Hub</span>
+      <div class="sidebar-header-actions">
+        <button class="toolbar-btn" onclick="openTocConfig()" title="目录配置">⚙️</button>
+      </div>
+    </div>
+    <div id="sidebar-tree" class="sidebar-tree">
+      <div class="tree-error">加载中...</div>
+    </div>
+  </aside>
+
+  <!-- 主区域 -->
+  <div class="main-area">
+    
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="toolbar-btn" onclick="toggleSidebar()" title="切换侧边栏">☰</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="btn-edit" onclick="toggleEdit()">✏️ <span>Edit</span></button>
+        <button class="toolbar-btn primary" id="btn-save" onclick="saveContent()" style="display:none;">💾 <span>Save</span></button>
+        <button class="toolbar-btn" id="btn-cancel" onclick="cancelEdit()" style="display:none;">❌ <span>Cancel</span></button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" onclick="toggleToc()" title="切换目录">📑 <span>TOC</span></button>
+      </div>
+
+      <div class="toolbar-center">
+        <span style="color:var(--text-muted);font-size:12px;font-family:var(--font-mono);" id="current-file-label"></span>
+      </div>
+
+      <div class="toolbar-right">
+        <button class="toolbar-btn" onclick="toggleSearch()" title="搜索 (Ctrl+K)">🔍</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="btn-screenshot" onclick="captureScreenshot()" title="截图">📸 <span>截图</span></button>
+        <button class="toolbar-btn" onclick="copyScreenshot()" title="复制截图到剪贴板">📋</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="btn-login" onclick="STATE.isLoggedIn ? doLogout() : openLogin()">🔒 登录</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="btn-theme" onclick="toggleThemePicker()">
+          <span id="current-theme-label">🌙 Dark+</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 内容区 -->
+    <div class="content-wrapper">
+      
+      <!-- 内容渲染 -->
+      <div id="content-area" class="content-area">
+        <div id="content-loading" class="content-loading">
+          📝 Loading...
+        </div>
+        <div id="content-render" class="content-render" style="display:none;"></div>
+        <textarea id="content-editor" class="content-editor" spellcheck="false"></textarea>
+      </div>
+
+      <!-- TOC 面板 -->
+      <aside id="toc-panel" class="toc-panel">
+        <div class="toc-header">📑 目录 · TABLE OF CONTENTS</div>
+        <ul id="toc-list" class="toc-list"></ul>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 主题选择器 ==================== -->
+<div id="theme-picker" class="theme-picker">
+  <div class="theme-picker-group">
+    <div class="theme-picker-group-label">暗色主题</div>
+    <div class="theme-picker-item" data-theme-id="dark-plus" onclick="setTheme('dark-plus')">🌙 Dark+</div>
+    <div class="theme-picker-item" data-theme-id="github-dark" onclick="setTheme('github-dark')">🐙 GitHub Dark</div>
+    <div class="theme-picker-item" data-theme-id="monokai" onclick="setTheme('monokai')">🎨 Monokai</div>
+    <div class="theme-picker-item" data-theme-id="solarized-dark" onclick="setTheme('solarized-dark')">☀️ Solarized Dark</div>
+    <div class="theme-picker-item" data-theme-id="one-dark-pro" onclick="setTheme('one-dark-pro')">🔵 One Dark Pro</div>
+    <div class="theme-picker-item" data-theme-id="dracula" onclick="setTheme('dracula')">🧛 Dracula</div>
+    <div class="theme-picker-item" data-theme-id="nord" onclick="setTheme('nord')">❄️ Nord</div>
+    <div class="theme-picker-item" data-theme-id="catppuccin-mocha" onclick="setTheme('catppuccin-mocha')">🐱 Catppuccin Mocha</div>
+    <div class="theme-picker-item" data-theme-id="tokyo-night" onclick="setTheme('tokyo-night')">🌃 Tokyo Night</div>
+    <div class="theme-picker-item" data-theme-id="gruvbox-dark" onclick="setTheme('gruvbox-dark')">🟠 Gruvbox Dark</div>
+    <div class="theme-picker-item" data-theme-id="ayu-mirage" onclick="setTheme('ayu-mirage')">🌅 Ayu Mirage</div>
+    <div class="theme-picker-item" data-theme-id="rose-pine" onclick="setTheme('rose-pine')">🌹 Rosé Pine</div>
+  </div>
+  <div class="theme-picker-group">
+    <div class="theme-picker-group-label">亮色主题</div>
+    <div class="theme-picker-item" data-theme-id="light-plus" onclick="setTheme('light-plus')">☁️ Light+</div>
+    <div class="theme-picker-item" data-theme-id="github-light" onclick="setTheme('github-light')">🐙 GitHub Light</div>
+    <div class="theme-picker-item" data-theme-id="solarized-light" onclick="setTheme('solarized-light')">🌤️ Solarized Light</div>
+    <div class="theme-picker-item" data-theme-id="catppuccin-latte" onclick="setTheme('catppuccin-latte')">🐱 Catppuccin Latte</div>
+  </div>
+</div>
+
+<!-- ==================== 第三方库 ==================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<!-- ==================== 主应用 ==================== -->
+<script src="js/app.js"></script>
+
+</body>
+</html>

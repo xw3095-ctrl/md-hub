@@ -1,0 +1,95 @@
+[
+  {
+    "type": "file",
+    "name": "index.md",
+    "label": "🏠 首页"
+  },
+  {
+    "type": "directory",
+    "name": "投资笔记",
+    "label": "📈 投资笔记",
+    "children": [
+      {
+        "type": "file",
+        "name": "资产配置框架.md",
+        "label": "资产配置框架"
+      },
+      {
+        "type": "file",
+        "name": "因子投资笔记.md",
+        "label": "因子投资笔记"
+      },
+      {
+        "type": "file",
+        "name": "波动率交易策略.md",
+        "label": "波动率交易策略"
+      },
+      {
+        "type": "directory",
+        "name": "期权策略",
+        "label": "期权策略",
+        "children": [
+          {
+            "type": "file",
+            "name": "备兑策略.md",
+            "label": "备兑策略 (Covered Call)"
+          },
+          {
+            "type": "file",
+            "name": "Straddle策略分析.md",
+            "label": "Straddle 策略分析"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "量化研究",
+    "label": "📊 量化研究",
+    "children": [
+      {
+        "type": "file",
+        "name": "市场情绪指标.md",
+        "label": "市场情绪指标"
+      },
+      {
+        "type": "file",
+        "name": "回测框架设计.md",
+        "label": "回测框架设计"
+      },
+      {
+        "type": "file",
+        "name": "仓位管理模型.md",
+        "label": "仓位管理模型"
+      },
+      {
+        "type": "file",
+        "name": "时间序列预测.md",
+        "label": "时间序列预测方法"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "学习笔记",
+    "label": "📚 学习笔记",
+    "children": [
+      {
+        "type": "file",
+        "name": "机器学习入门.md",
+        "label": "机器学习入门"
+      },
+      {
+        "type": "file",
+        "name": "Python数据分析.md",
+        "label": "Python 数据分析"
+      },
+      {
+        "type": "file",
+        "name": "因果推断基础.md",
+        "label": "因果推断基础"
+      }
+    ]
+  }
+]
