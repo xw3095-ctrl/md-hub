@@ -20,6 +20,16 @@ const $$ = (sel) => document.querySelectorAll(sel);
 
 // ========== 初始化 ==========
 async function init() {
+  // 立即隐藏 FOUC 遮罩（使用 CSS 动画安全阀已做兜底）
+  const fouc = document.getElementById('fouc-overlay');
+  if (fouc) {
+    fouc.classList.add('fade-out');
+    setTimeout(() => { if (fouc.parentNode) fouc.parentNode.removeChild(fouc); }, 300);
+  }
+
+  // 确保 CDN 库已加载（defer 失败时兜底加载）
+  await ensureCdnLibs();
+
   // 设置主题
   document.documentElement.setAttribute('data-theme', STATE.currentTheme);
   document.getElementById('current-theme-label').textContent = getThemeLabel(STATE.currentTheme);
@@ -27,10 +37,6 @@ async function init() {
   document.querySelectorAll('.theme-picker-item').forEach(el => {
     el.classList.toggle('active', el.dataset.themeId === STATE.currentTheme);
   });
-
-  // 移除 FOUC 遮罩
-  document.getElementById('fouc-overlay').classList.add('fade-out');
-  setTimeout(() => document.getElementById('fouc-overlay').style.display = 'none', 300);
 
   // 检查弹窗状态
   if (!localStorage.getItem('mdhub-risk-accepted')) {
@@ -234,6 +240,14 @@ function renderContent(md, filePath) {
     if (typeof hljs !== 'undefined') {
       renderEl.querySelectorAll('pre code').forEach(block => {
         try { hljs.highlightElement(block); } catch(e) {}
+      });
+    } else {
+      // hljs 不可用时的备用样式
+      renderEl.querySelectorAll('pre').forEach(pre => {
+        pre.style.background = 'var(--code-bg)';
+        pre.style.padding = '16px';
+        pre.style.borderRadius = 'var(--radius-md)';
+        pre.style.overflowX = 'auto';
       });
     }
     
@@ -672,12 +686,36 @@ function showToast(msg) {
 // ========== 辅助工具 ==========
 function loadScript(src) {
   return new Promise((resolve, reject) => {
+    // 避免重复加载
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if (existing && existing.dataset.loaded === 'true') return resolve();
+    
     const script = document.createElement('script');
     script.src = src;
-    script.onload = resolve;
-    script.onerror = reject;
+    script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
+    script.onerror = () => { console.warn(`CDN 加载失败: ${src}`); reject(new Error(src)); };
     document.head.appendChild(script);
   });
+}
+
+async function ensureCdnLibs() {
+  const libs = [
+    { var: 'marked', url: 'https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js' },
+    { var: 'hljs', url: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js' },
+    { var: 'katex', url: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js' },
+    { var: 'renderMathInElement', url: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js' },
+  ];
+  
+  for (const lib of libs) {
+    if (typeof window[lib.var] === 'undefined') {
+      try {
+        await loadScript(lib.url);
+        console.log(`✅ CDN 已加载: ${lib.var}`);
+      } catch(e) {
+        console.warn(`⚠️ CDN 加载失败，降级运行: ${lib.var}`);
+      }
+    }
+  }
 }
 
 // ========== 事件绑定 ==========
