@@ -50,48 +50,13 @@
     "children": [
       {
         "type": "file",
-        "name": "Trump_TACO_Financial_Markets.md",
-        "label": "🇺🇸 Trump, TACO & Financial Markets"
+        "name": "6G_Communications.md",
+        "label": "📡 6G 通信研究"
       },
       {
         "type": "file",
-        "name": "stock_strategy_principles_2026.md",
-        "label": "📊 股票策略原则 (2026)"
-      },
-      {
-        "type": "file",
-        "name": "Zhengbang_002157.md",
-        "label": "🐷 正邦科技 002157.SZ"
-      },
-      {
-        "type": "file",
-        "name": "Zhengbang_002157_v2.md",
-        "label": "🐷 正邦科技 002157.SZ (续)"
-      },
-      {
-        "type": "file",
-        "name": "TaiheNewMaterial_002254.md",
-        "label": "🧪 泰和新材 002254.SZ"
-      },
-      {
-        "type": "file",
-        "name": "TuyaSmart_2419.md",
-        "label": "🏠 涂鸦智能 2419.HK"
-      },
-      {
-        "type": "file",
-        "name": "Tonghuashun_300033.md",
-        "label": "📈 同花顺 300033.SZ"
-      },
-      {
-        "type": "file",
-        "name": "DongshanPrecise_002384.md",
-        "label": "🔧 东山精密 002384.SZ"
-      },
-      {
-        "type": "file",
-        "name": "Maxwell_300751.md",
-        "label": "⚡ 迈为股份 300751.SZ"
+        "name": "AI_Application_Landscape.md",
+        "label": "🤖 AI 应用落地全景"
       },
       {
         "type": "file",
@@ -100,18 +65,18 @@
       },
       {
         "type": "file",
-        "name": "SwineIndustry_Apr2026.md",
-        "label": "🐖 生猪行业分析 (2026.04)"
+        "name": "CPO_Technology.md",
+        "label": "🌐 CPO 技术研究"
       },
       {
         "type": "file",
-        "name": "SwineWeekly_Apr2026.md",
-        "label": "🐖 生猪周度跟踪 (2026.05)"
+        "name": "CashFlow_Valuation.md",
+        "label": "💰 现金流折现与交易结构"
       },
       {
         "type": "file",
-        "name": "MLCC_Industry.md",
-        "label": "🔬 MLCC 产业链分析"
+        "name": "Cloud_AI_Infrastructure.md",
+        "label": "☁️ 云/AI 基础设施"
       },
       {
         "type": "file",
@@ -125,33 +90,33 @@
       },
       {
         "type": "file",
-        "name": "AI_Application_Landscape.md",
-        "label": "🤖 AI 应用落地全景"
+        "name": "DongshanPrecise_002384.md",
+        "label": "🔧 东山精密 002384.SZ"
       },
       {
         "type": "file",
-        "name": "Cloud_AI_Infrastructure.md",
-        "label": "☁️ 云/AI 基础设施"
-      },
-      {
-        "type": "file",
-        "name": "CPO_Technology.md",
-        "label": "🌐 CPO 技术研究"
-      },
-      {
-        "type": "file",
-        "name": "6G_Communications.md",
-        "label": "📡 6G 通信研究"
-      },
-      {
-        "type": "file",
-        "name": "Neijuan_GoingGlobal.md",
-        "label": "🌏 内卷与出海研究"
+        "name": "EMA_VOL_Strategy_v7e.md",
+        "label": "📊 EMA+VOL 择时策略 v7e"
       },
       {
         "type": "file",
         "name": "ETF_Trading_Notes.md",
         "label": "📊 ETF 交易笔记"
+      },
+      {
+        "type": "file",
+        "name": "MLCC_Industry.md",
+        "label": "🔬 MLCC 产业链分析"
+      },
+      {
+        "type": "file",
+        "name": "Maxwell_300751.md",
+        "label": "⚡ 迈为股份 300751.SZ"
+      },
+      {
+        "type": "file",
+        "name": "Neijuan_GoingGlobal.md",
+        "label": "🌏 内卷与出海研究"
       },
       {
         "type": "file",
@@ -165,13 +130,48 @@
       },
       {
         "type": "file",
-        "name": "EMA_VOL_Strategy_v7e.md",
-        "label": "📊 EMA+VOL 择时策略 v7e"
+        "name": "SwineIndustry_Apr2026.md",
+        "label": "🐖 生猪行业分析 (2026.04)"
       },
       {
         "type": "file",
-        "name": "CashFlow_Valuation.md",
-        "label": "💰 现金流折现与交易结构"
+        "name": "SwineIndustry_Apr2026_v2.md",
+        "label": "🐖 生猪行业分析 (续)"
+      },
+      {
+        "type": "file",
+        "name": "SwineWeekly_Apr2026.md",
+        "label": "🐖 生猪周度跟踪 (2026.05)"
+      },
+      {
+        "type": "file",
+        "name": "TaiheNewMaterial_002254.md",
+        "label": "🧪 泰和新材 002254.SZ"
+      },
+      {
+        "type": "file",
+        "name": "Tonghuashun_300033.md",
+        "label": "📈 同花顺 300033.SZ"
+      },
+      {
+        "type": "file",
+        "name": "Trump_TACO_Financial_Markets.md",
+        "label": "🇺🇸 Trump, TACO & Financial Markets"
+      },
+      {
+        "type": "file",
+        "name": "TuyaSmart_2419.md",
+        "label": "🏠 涂鸦智能 2419.HK"
+      },
+      {
+        "type": "file",
+        "name": "Zhengbang_002157.md",
+        "label": "🐷 正邦科技 002157.SZ"
+      },
+      {
+        "type": "file",
+        "name": "stock_strategy_principles_2026.md",
+        "label": "📊 股票策略原则 (2026)"
       }
     ]
   },
