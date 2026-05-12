@@ -45,6 +45,43 @@
   },
   {
     "type": "directory",
+    "name": "AG研报",
+    "label": "📋 AG 研报",
+    "children": [
+      {
+        "type": "file",
+        "name": "Trump_TACO_Financial_Markets.md",
+        "label": "🇺🇸 Trump, TACO & Financial Markets"
+      },
+      {
+        "type": "file",
+        "name": "stock_strategy_principles_2026.md",
+        "label": "📊 股票策略原则 (2026)"
+      },
+      {
+        "type": "file",
+        "name": "Zhengbang_002157.md",
+        "label": "🐷 正邦科技 002157.SZ 研报"
+      },
+      {
+        "type": "file",
+        "name": "TaiheNewMaterial_002254.md",
+        "label": "🧪 泰和新材 002254.SZ 研报"
+      },
+      {
+        "type": "file",
+        "name": "TuyaSmart_2419.md",
+        "label": "🏠 涂鸦智能 2419.HK 研报"
+      },
+      {
+        "type": "file",
+        "name": "SwineIndustry_Apr2026.md",
+        "label": "🐖 生猪行业分析报告 (2026.04)"
+      }
+    ]
+  },
+  {
+    "type": "directory",
     "name": "量化研究",
     "label": "📊 量化研究",
     "children": [
