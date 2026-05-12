@@ -23,6 +23,14 @@ async function init() {
   // 设置主题
   document.documentElement.setAttribute('data-theme', STATE.currentTheme);
   document.getElementById('current-theme-label').textContent = getThemeLabel(STATE.currentTheme);
+  // 高亮当前主题
+  document.querySelectorAll('.theme-picker-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.themeId === STATE.currentTheme);
+  });
+
+  // 移除 FOUC 遮罩
+  document.getElementById('fouc-overlay').classList.add('fade-out');
+  setTimeout(() => document.getElementById('fouc-overlay').style.display = 'none', 300);
 
   // 检查弹窗状态
   if (!localStorage.getItem('mdhub-risk-accepted')) {
@@ -82,6 +90,10 @@ function setTheme(themeId) {
   document.documentElement.setAttribute('data-theme', themeId);
   document.getElementById('current-theme-label').textContent = getThemeLabel(themeId);
   localStorage.setItem('mdhub-theme', themeId);
+  // 高亮当前主题
+  document.querySelectorAll('.theme-picker-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.themeId === themeId);
+  });
   closeThemePicker();
 }
 
@@ -200,14 +212,13 @@ function renderContent(md, filePath) {
   const renderEl = document.getElementById('content-render');
   const editor = document.getElementById('content-editor');
   
-  
   // 使用 marked 渲染
-    // 配置 marked
+  if (typeof marked !== 'undefined') {
     marked.setOptions({
       breaks: true,
       gfm: true,
       highlight: function(code, lang) {
-        if (lang && hljs && hljs.getLanguage(lang)) {
+        if (lang && typeof hljs !== 'undefined' && hljs.getLanguage(lang)) {
           try {
             return hljs.highlight(code, { language: lang }).value;
           } catch(e) {}
@@ -222,7 +233,7 @@ function renderContent(md, filePath) {
     // 代码高亮
     if (typeof hljs !== 'undefined') {
       renderEl.querySelectorAll('pre code').forEach(block => {
-        hljs.highlightElement(block);
+        try { hljs.highlightElement(block); } catch(e) {}
       });
     }
     
@@ -273,6 +284,8 @@ function renderContent(md, filePath) {
   // 更新当前文件标签
   const fileLabel = getFileLabel(filePath);
   document.getElementById('current-file-label').textContent = fileLabel || filePath;
+  // 更新页面标题
+  document.title = fileLabel ? `${fileLabel} · MD Hub` : 'MD Hub · 个人知识库';
 
   // 存储内容到编辑器
   editor.value = md;
@@ -683,6 +696,11 @@ function bindEvents() {
       e.preventDefault();
       toggleSearch();
     }
+    // Ctrl/Cmd + B 切换侧边栏
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
     // Escape 关闭弹窗
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
@@ -694,6 +712,13 @@ function bindEvents() {
   // 点击外部关闭搜索
   document.getElementById('search-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) toggleSearch();
+  });
+  
+  // 点击外部关闭弹窗
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) m.classList.remove('active');
+    });
   });
   
   // 搜索防抖

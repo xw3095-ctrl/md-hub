@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD Hub · 个人知识库</title>
 
+<!-- FOUC 防护：隐藏页面直到 JS 加载完成 -->
+<style>
+  #fouc-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;
+    background: var(--bg-primary, #1e1e1e);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.3s ease;
+  }
+  #fouc-overlay.fade-out { opacity: 0; }
+  .fouc-spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border-color, #3c3c3c);
+    border-top-color: var(--accent, #007acc);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <!-- CDN 库 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -300,11 +319,20 @@ a:hover { text-decoration: underline; }
    ============================================ */
 .content-loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  height: 300px;
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 14px;
+  gap: 16px;
+}
+.content-loading .spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .content-render {
@@ -861,6 +889,8 @@ a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
+<!-- FOUC 防护遮罩 -->
+<div id="fouc-overlay"><div class="fouc-spinner"></div></div>
 
 <!-- ==================== Toast ==================== -->
 <div id="toast" class="toast"></div>
@@ -1002,7 +1032,8 @@ a:hover { text-decoration: underline; }
       <!-- 内容渲染 -->
       <div id="content-area" class="content-area">
         <div id="content-loading" class="content-loading">
-          📝 Loading...
+          <div class="spinner"></div>
+          <span>📝 Loading...</span>
         </div>
         <div id="content-render" class="content-render" style="display:none;"></div>
         <textarea id="content-editor" class="content-editor" spellcheck="false"></textarea>
